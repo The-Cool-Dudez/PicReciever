@@ -1,6 +1,7 @@
 from flask import request
 from json import dumps
 from app.models import Images
+from app.models import Images
 
 
 from . import bp
@@ -14,5 +15,6 @@ def image():
             return dumps({"status": "failure"})
         print(f)
         image.path = Images("images/" + f.filename)
+        db.session.add(f.filename)
         return dumps({"status": "ok"})
     return dumps({"status": "failure"})
