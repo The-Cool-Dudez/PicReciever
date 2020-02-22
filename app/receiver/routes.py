@@ -1,5 +1,7 @@
 from flask import request
 from json import dumps
+from app.models import Images
+
 
 from . import bp
 
@@ -11,5 +13,6 @@ def image():
         if f.filename == '':
             return dumps({"status": "failure"})
         print(f)
+        image.path = Images("images/" + f.filename)
         return dumps({"status": "ok"})
     return dumps({"status": "failure"})
