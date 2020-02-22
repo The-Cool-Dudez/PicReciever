@@ -16,5 +16,6 @@ def image():
         print(f)
         image.path = Images("images/" + f.filename)
         db.session.add(f.filename)
+        db.session.commit(f.filename)
         return dumps({"status": "ok"})
     return dumps({"status": "failure"})
