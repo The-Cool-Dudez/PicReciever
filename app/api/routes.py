@@ -42,12 +42,13 @@ def image():
         path = join(UPLOAD_FOLDER, filename)
 
         print(f)
-        img = Images.query.filter_by(path=path)
-        if img is None:
+        img = Images.query.filter_by(path=path).first()
+        if img is not None:
             return dumps({
                 "status": "failure",
                 "message": "File with that name already exists"
             })
+
         image = Images(path)
         db.session.add(image)
         db.session.commit()
