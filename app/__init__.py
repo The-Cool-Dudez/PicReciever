@@ -1,5 +1,6 @@
 from flask import Flask
 from app.db import dbinit
+from app.models import Images
 
 def create_app():
     app = Flask(__name__)
