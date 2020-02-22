@@ -2,7 +2,7 @@ from app.api import bp
 from app.models import Images
 from app.db import db
 
-from flask import request
+from flask import request, current_app
 from werkzeug.utils import secure_filename
 from urllib.parse import urljoin
 from os.path import join
@@ -42,7 +42,6 @@ def image():
         filename = secure_filename(f.filename)
         path = join(UPLOAD_FOLDER, filename)
 
-        print(f)
         img = Images.query.filter_by(path=path).first()
         if img is not None:
             return dumps({
@@ -50,9 +49,11 @@ def image():
                 "message": "File with that name already exists"
             })
 
+        # add the file to the database
         image = Images(path)
         db.session.add(image)
         db.session.commit()
-        f.save(path)
+        f.save(join(current_app.root_path, "static", path)) #save the file
+
         return dumps({"status": "ok"})
     return dumps({"status": "failure"})
