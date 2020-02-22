@@ -1,6 +1,6 @@
 #download image
 from app.api import bp
 
-@bp.route('get/<int:id>')
+@bp.route('/get/<int:id>')
 def get(id):
     return ""
