@@ -10,6 +10,9 @@ from json import dumps
 
 UPLOAD_FOLDER = "uploads/"
 
+def get_image_url(path):
+    return urljoin(request.base_url, "/static/" + path)
+
 #get link for image
 @bp.route('/get/<int:id>')
 def get(id):
@@ -21,7 +24,7 @@ def get(id):
         })
     return jsonify({
         "status": "ok",
-        "url": urljoin(request.base_url, "/static/" + image.path)
+        "url": get_image_url(image.path)
     })
 
 #view image
@@ -41,7 +44,10 @@ def images():
     images = Images.query.all()
     images_json = {"images": []}
     for image in images:
-        images_json["images"].append({"id": image.id, "path": image.path})
+        images_json["images"].append({
+            "id": image.id,
+            "url": get_image_url(image.path)
+        })
     return jsonify(images_json)
 
 #upload image
