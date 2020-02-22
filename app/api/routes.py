@@ -1,7 +1,13 @@
+from flask import request
 from app.api import bp
+from werkzeug.utils import secure_filename
 
 from app.models import Images
+from app.db import db
 from urllib.parse import urljoin
+from os.path import join
+
+UPLOAD_FOLDER = "uploads/"
 
 #get link for image
 @bp.route('/get/<int:id>')
@@ -27,10 +33,24 @@ def image():
     if 'image' in request.files:
         f = request.files['image']
         if f.filename == '':
-            return dumps({"status": "failure"})
+            return dumps({
+                "status": "failure",
+                "message": "No file uploaded"
+            })
+
+        filename = secure_filename(f.filename)
+        path = join(UPLOAD_FOLDER, filename)
+
         print(f)
-        image = Images("images/" + f.filename)
+        img = Images.query.filter_by(path=path)
+        if img is None:
+            return dumps({
+                "status": "failure",
+                "message": "File with that name already exists"
+            })
+        image = Images(path)
         db.session.add(image)
         db.session.commit()
+        f.save(path)
         return dumps({"status": "ok"})
     return dumps({"status": "failure"})
