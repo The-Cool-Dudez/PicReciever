@@ -2,11 +2,10 @@ from app.api import bp
 from app.models import Images
 from app.db import db
 
-from flask import request, current_app
+from flask import request, current_app, jsonify, abort
 from werkzeug.utils import secure_filename
 from urllib.parse import urljoin
 from os.path import join
-from json import dumps
 
 UPLOAD_FOLDER = "uploads/"
 
@@ -15,14 +14,22 @@ UPLOAD_FOLDER = "uploads/"
 def get(id):
     image = Images.query.filter_by(id=id).first()
     if image is None:
-        return ""
-    print(request.base_url)
-    return urljoin(request.base_url + "/" + image.path)
+        return jsonify({
+            "status": "failure",
+            "message": "No image with that id exists."
+        })
+    return jsonify({
+        "status": "ok",
+        "url": urljoin(request.base_url, "/static/" + image.path)
+    })
 
 #view image
 @bp.route('/view/<int:id>')
 def view(id):
-    return ""
+    image = Images.query.filter_by(id=id).first()
+    if image is None:
+        abort(404)
+    return current_app.send_static_file(join(UPLOAD_FOLDER, image.path))
 
 @bp.route('/download/<int:id>')
 def download():
@@ -34,7 +41,7 @@ def image():
     if 'image' in request.files:
         f = request.files['image']
         if f.filename == '':
-            return dumps({
+            return jsonify({
                 "status": "failure",
                 "message": "No file uploaded"
             })
@@ -44,7 +51,7 @@ def image():
 
         img = Images.query.filter_by(path=path).first()
         if img is not None:
-            return dumps({
+            return jsonify({
                 "status": "failure",
                 "message": "File with that name already exists"
             })
@@ -55,5 +62,5 @@ def image():
         db.session.commit()
         f.save(join(current_app.root_path, "static", path)) #save the file
 
-        return dumps({"status": "ok"})
-    return dumps({"status": "failure"})
+        return jsonify({"status": "ok"})
+    return jsonify({"status": "failure"})
