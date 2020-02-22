@@ -131,3 +131,7 @@ dmypy.json
 *.db
 
 !app/static/uploads/.gitkeep
+app/static/uploads/*.jpg
+app/static/uploads/*.jpeg
+app/static/uploads/*.gif
+app/static/uploads/*.png
