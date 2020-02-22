@@ -77,5 +77,8 @@ def image():
         db.session.commit()
         f.save(join(current_app.root_path, "static", path)) #save the file
 
-        return jsonify({"status": "ok"})
+        return jsonify({
+            "status": "ok",
+            "url": get_image_url(image.path)
+        })
     return jsonify({"status": "failure"})
