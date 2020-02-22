@@ -6,6 +6,7 @@ from flask import request, current_app, jsonify, abort
 from werkzeug.utils import secure_filename
 from urllib.parse import urljoin
 from os.path import join
+from json import dumps
 
 UPLOAD_FOLDER = "uploads/"
 
@@ -34,6 +35,14 @@ def view(id):
 @bp.route('/download/<int:id>')
 def download():
     return ""
+
+@bp.route('/images')
+def images():
+    images = Images.query.all()
+    images_json = {"images": []}
+    for image in images:
+        images_json["images"].append({"id": image.id, "path": image.path})
+    return jsonify(images_json)
 
 #upload image
 @bp.route('/upload', methods=['POST'])
