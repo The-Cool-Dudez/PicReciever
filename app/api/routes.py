@@ -33,7 +33,7 @@ def view(id):
     image = Images.query.filter_by(id=id).first()
     if image is None:
         abort(404)
-    return current_app.send_static_file(join(UPLOAD_FOLDER, image.path))
+    return current_app.send_static_file(image.path)
 
 @bp.route('/download/<int:id>')
 def download():
